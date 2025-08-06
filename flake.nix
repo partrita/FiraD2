@@ -35,16 +35,37 @@
           pkgs.fontforge
           pkgs.python3
           pkgs.unzip
-          pkgs.wget # The script uses it
+          pkgs.wget
         ];
 
-        D2CODING_SRC = d2coding;
-        FIRACODE_SRC = fira_code;
-        FIRACODE_NERD_SRC = fira_code_nerd;
-
         buildPhase = ''
-          chmod +x ./scripts/build.sh
-          ./scripts/build.sh
+          set -e
+
+          echo "[INFO] Setting up build environment..."
+          export DOWNLOAD_PATH="assets"
+          export BUILT_FONTS_PATH="built_fonts"
+          mkdir -p "$DOWNLOAD_PATH"
+          mkdir -p "$BUILT_FONTS_PATH"
+
+          echo "[INFO] Extracting font archives..."
+          unzip -o "${d2coding}" -d "$DOWNLOAD_PATH"
+          unzip -o "${fira_code}" -d "$DOWNLOAD_PATH"
+          unzip -o "${fira_code_nerd}" -d "$DOWNLOAD_PATH"
+
+          echo "[INFO] Cleaning up non-regular ttf files..."
+          find "$DOWNLOAD_PATH" -type f -name "*.ttf" | while read -r file; do
+              if [[ "$file" == *D2Coding* ]]; then
+                  echo "  - Keeping D2Coding font file: $file"
+                  continue
+              fi
+              if [[ "$file" != *Regular* ]]; then
+                  echo "  - Removing: $file"
+                  rm "$file"
+              fi
+          done
+
+          echo "[INFO] Building fonts..."
+          python3 -c 'from scripts.hangulify import build_fonts; build_fonts()'
         '';
 
         installPhase = ''
