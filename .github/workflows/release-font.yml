@@ -1,4 +1,4 @@
-name: Build and Release TTF & WOFF2 (Nix)
+name: Build and Release TTF & WOFF2
 
 on:
   push:
@@ -8,37 +8,37 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 60 # Consider increasing timeout
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Install FontForge and Python bindings
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fontforge python3-fontforge wget
 
-      - name: Build fonts with Nix
-        run: nix build
+      - name: Build fonts
+        run: python3 scripts/build.py all
 
       - name: Find generated TTF files
         id: ttf_files
-        run: echo "files=$(find ./result -name '*.ttf' -printf '%p,' 2>/dev/null | sed 's/,$//' || echo '')" >> $GITHUB_OUTPUT
+        run: echo "files=$(find built_fonts -name '*.ttf' -printf '%p,' 2>/dev/null | sed 's/,$//' || echo '')" >> $GITHUB_OUTPUT
 
       - name: Find generated WOFF2 files
         id: woff2_files
-        run: echo "files=$(find ./result -name '*.woff2' -printf '%p,' 2>/dev/null | sed 's/,$//' || echo '')" >> $GITHUB_OUTPUT
+        run: echo "files=$(find built_fonts -name '*.woff2' -printf '%p,' 2>/dev/null | sed 's/,$//' || echo '')" >> $GITHUB_OUTPUT
 
       - name: Upload TTF files to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: ${{ steps.ttf_files.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload WOFF2 files to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: ${{ steps.woff2_files.outputs.files }}
         env:

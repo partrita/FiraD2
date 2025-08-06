@@ -22,9 +22,32 @@ FiraCode와 D2Coding의 장점을 결합했습니다. JetBrains Mono에 D2Coding
 
 ## 직접 빌드하기
 
-Docker를 사용하여 직접 빌드하는 방법은 아래와 같습니다.
+### Nix 사용법
 
-1.  먼저 저장소를 복제하고 Docker 이미지를 빌드합니다(이미지 이름을 `JBD2`로 지정):
+Nix를 사용해 직접 빌드하는 방법은 아래와 같습니다.
+
+1.  먼저 저장소를 복제하고 Nix 개발 환경을 진입합니다.
+
+    ```bash
+    gh repo clone partrita/FiraD2
+    cd FiraD2
+    nix develop
+    ```
+
+2.  빌드된 Nix 개발 환경에서 다음 명령어를 실행합니다.
+      * `python scripts/build.py all`: 자동으로 설정하고 폰트를 빌드합니다.
+      * `python scripts/build.py setup`: 필요한 폰트 파일을 다운로드하고 압축을 해제합니다.
+      * `python scripts/build.py build`: 폰트를 병합하고 최종 결과물을 출력합니다.
+      * `python scripts/build.py clean`: 다운로드된 파일과 출력 파일을 모두 삭제합니다.
+
+3. 종료는 `exit`를 사용합니다.
+
+
+### Docker 사용법
+
+Docker를 사용해 직접 빌드하는 방법은 아래와 같습니다.
+
+1.  먼저 저장소를 복제하고 Docker 이미지를 빌드합니다(이미지 이름을 `firad2`로 지정):
 
     ```bash
     gh repo clone partrita/FiraD2
@@ -45,6 +68,7 @@ Docker를 사용하여 직접 빌드하는 방법은 아래와 같습니다.
       * `python3 scripts/build.py build`: 폰트를 병합하고 최종 결과물을 출력합니다.
       * `python3 scripts/build.py clean`: 다운로드된 파일과 출력 파일을 모두 삭제합니다.
 
+4. 종료는 `exit`를 사용합니다.
 
 ## Config 설명
 
