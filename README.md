@@ -1,5 +1,7 @@
 # FiraD2 - FiraCode with Hangul
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/partrita/FiraD2?style=flat-square)
+
 ![](./static/demo.png)
 
 FiraCode와 D2Coding의 장점을 결합했습니다. JetBrains Mono에 D2Coding의 한글 영역(U+3131-U+318E, U+AC00-U+D7A3)을 덧씌운 뒤 최적의 가독성을 위해 글자 폭을 조정했습니다. 또한 vim을 위한 Nerd Fonts도 포함되어 있습니다.
