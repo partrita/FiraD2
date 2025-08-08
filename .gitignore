@@ -246,8 +246,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
-# 생성된 파일
-assets/
-out/
-*.zip
