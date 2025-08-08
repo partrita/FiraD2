@@ -1,79 +1,232 @@
-# FiraD2 - FiraCode with Hangul
+# FiraD2 - FiraCode with Korean Hangul Support
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/partrita/FiraD2?style=flat-square)
+![License](https://img.shields.io/github/license/partrita/FiraD2?style=flat-square)
+![Build Status](https://img.shields.io/github/actions/workflow/status/partrita/FiraD2/release-font.yml?style=flat-square)
 
-![](./static/demo.png)
+**FiraD2** is a programming font that combines the best of FiraCode's ligatures and coding features with D2Coding's excellent Korean Hangul support. This font provides optimal readability for code that includes both English and Korean text.
 
-FiraCode와 D2Coding의 장점을 결합했습니다. JetBrains Mono에 D2Coding의 한글 영역(U+3131-U+318E, U+AC00-U+D7A3)을 덧씌운 뒤 최적의 가독성을 위해 글자 폭을 조정했습니다. 또한 vim을 위한 Nerd Fonts도 포함되어 있습니다.
+## ✨ Features
 
------
+- **Perfect Korean Support**: Incorporates D2Coding's Hangul glyphs (U+3131-U+318E, U+AC00-U+D7A3)
+- **Programming Ligatures**: Maintains FiraCode's popular programming ligatures (→, >=, !=, etc.)
+- **Multiple Variants**: Regular fonts, Nerd Font versions with icons, and web fonts
+- **Optimized Spacing**: Carefully adjusted character widths for better readability
+- **Cross-platform**: Works on Windows, macOS, and Linux
 
-## 폰트 다운로드
+## 📥 Download
 
-[release](https://github.com/partrita/FiraD2/releases) 페이지에서 `ttf` 파일들을 직접 다운로드할 수 있습니다. 파일명에 포함된 용어에 대한 설명은 아래를 참고하세요.
+Download the latest fonts from the [Releases](https://github.com/partrita/FiraD2/releases) page.
 
-  * `FiraD2-Regular.ttf`: 일반 글꼴입니다. 주로 이 파일을 사용하시면 됩니다.
-  * `FiraD2-Regular.woff2`: 웹폰트 용도에 적합합니다.
-  * `FiraD2NF-Regular.ttf`: NF는 Nerd Font의 약자로, 일반 폰트와 다양한 아이콘 글리프를 포함합니다.
-  * `FiraD2NFM-Regular.ttf`: NFM은 Nerd Font Mono의 약자로, 고정폭 폰트를 의미합니다.
-  * `FiraD2NFP-Regular.ttf`: NFP는 Nerd Font Proportional의 약자로, 비등폭 글꼴을 의미합니다. 일반적인 텍스트, GUI, 프레젠테이션 등 문자의 폭이 다른 경우에 적합합니다.
-  * `FiraD2NL-Regular.ttf`: NL은 No Ligatures를 의미합니다. 개발자를 위해 디자인된 합자(ligature) 기능이 제거된 버전입니다.
+### Font Variants Explained
 
+| File | Description | Best For |
+|------|-------------|----------|
+| `FiraD2-Regular.ttf` | Main font for general use | Code editors, IDEs |
+| `FiraD2-Bold.ttf` | Bold variant | Emphasis, headers |
+| `FiraD2-Regular.woff2` | Web font format | Web applications |
+| `FiraD2NerdFont-Regular.ttf` | With programming icons | Terminal, Vim/Neovim |
+| `FiraD2NerdFont-Bold.ttf` | Bold with icons | Terminal emphasis |
 
-## 직접 빌드하기
+### Installation
 
-### Nix 사용법
+#### Windows
+1. Download the `.ttf` files
+2. Right-click and select "Install" or "Install for all users"
+3. Restart your applications
 
-Nix를 사용해 직접 빌드하는 방법은 아래와 같습니다.
+#### macOS  
+1. Download the `.ttf` files
+2. Double-click to open Font Book
+3. Click "Install Font"
+4. Restart your applications
 
-1.  먼저 저장소를 복제하고 Nix 개발 환경을 진입합니다.
+#### Linux
+1. Download the `.ttf` files
+2. Copy to `~/.local/share/fonts/` or `/usr/share/fonts/`
+3. Run `fc-cache -fv`
+4. Restart your applications
 
-    ```bash
-    gh repo clone partrita/FiraD2
-    cd FiraD2
-    nix develop
-    ```
+## 🛠️ Building from Source
 
-2.  빌드된 Nix 개발 환경에서 다음 명령어를 실행합니다.
-      * `python scripts/build.py all`: 자동으로 설정하고 폰트를 빌드합니다.
-      * `python scripts/build.py setup`: 필요한 폰트 파일을 다운로드하고 압축을 해제합니다.
-      * `python scripts/build.py build`: 폰트를 병합하고 최종 결과물을 출력합니다.
-      * `python scripts/build.py clean`: 다운로드된 파일과 출력 파일을 모두 삭제합니다.
+### Prerequisites
 
-3. 종료는 `exit`를 사용합니다.
+Before building, you need:
+- Python 3.7+
+- FontForge with Python bindings
+- wget and unzip utilities
 
+### Method 1: Using Nix (Recommended)
 
-### Docker 사용법
+The easiest way to build FiraD2 with all dependencies managed:
 
-Docker를 사용해 직접 빌드하는 방법은 아래와 같습니다.
+```bash
+# Clone the repository
+git clone https://github.com/partrita/FiraD2.git
+cd FiraD2
 
-1.  먼저 저장소를 복제하고 Docker 이미지를 빌드합니다(이미지 이름을 `firad2`로 지정):
+# Enter Nix development environment
+nix develop
 
-    ```bash
-    gh repo clone partrita/FiraD2
-    cd FiraD2
-    docker build -t firad2 .
-    ```
+# Build fonts (downloads assets automatically)
+python scripts/build.py build
 
-2.  빌드된 Docker 이미지를 인터랙티브 모드로 실행합니다:
+# Exit when done
+exit
+```
 
-    ```bash
-    docker run -it -v "$(pwd)":/app firad2
-    ```
+### Method 2: Using Docker
 
-3.  Docker 컨테이너 안에서 다음 명령어를 실행할 수 있습니다:
+Build in a containerized environment:
 
-      * `python3 scripts/build.py all`: 자동으로 설정하고 폰트를 빌드합니다.
-      * `python3 scripts/build.py setup`: 필요한 폰트 파일을 다운로드하고 압축을 해제합니다.
-      * `python3 scripts/build.py build`: 폰트를 병합하고 최종 결과물을 출력합니다.
-      * `python3 scripts/build.py clean`: 다운로드된 파일과 출력 파일을 모두 삭제합니다.
+```bash
+# Clone and build Docker image
+git clone https://github.com/partrita/FiraD2.git
+cd FiraD2
+docker build -t firad2 .
 
-4. 종료는 `exit`를 사용합니다.
+# Run interactive container
+docker run -it -v "$(pwd)":/app firad2
 
-## Config 설명
+# Inside container: build fonts
+python3 scripts/build.py build
 
-`config.py` 파일에는 폰트 빌드 프로세스를 제어하는 여러 변수가 정의되어 있습니다.
+# Exit container
+exit
+```
 
-## 라이선스
+### Method 3: Manual Setup
 
-이 프로젝트는 OFL(Open Font License) 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조해주세요.
+For advanced users who want to set up dependencies manually:
+
+#### Ubuntu/Debian
+```bash
+sudo apt-get update
+sudo apt-get install fontforge python3-fontforge wget unzip
+```
+
+#### macOS
+```bash
+brew install fontforge wget
+pip3 install fontforge-python
+```
+
+#### Manual Build Process
+```bash
+# Clone repository
+git clone https://github.com/partrita/FiraD2.git
+cd FiraD2
+
+# Download required font assets (you'll need to do this manually)
+# - FiraCode: https://github.com/tonsky/FiraCode/releases
+# - D2Coding: https://github.com/naver/d2codingfont/releases  
+# - FiraCode NerdFont: https://github.com/ryanoasis/nerd-fonts/releases
+
+# Extract fonts to assets/ directories:
+# assets/en_font/        - FiraCode TTF files
+# assets/ko_font/        - D2Coding TTF files  
+# assets/en_nerd_font/   - FiraCode NerdFont TTF files
+
+# Build fonts
+python3 scripts/build.py build
+
+# Clean up (optional)
+python3 scripts/build.py clean
+```
+
+### Build Commands
+
+| Command | Description |
+|---------|-------------|
+| `python scripts/build.py build` | Build fonts from existing assets |
+| `python scripts/build.py test` | Test font building process |
+| `python scripts/build.py clean` | Clean generated files |
+
+## 🎨 Usage Examples
+
+### VS Code
+Add to your `settings.json`:
+```json
+{
+    "editor.fontFamily": "FiraD2, Consolas, monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14
+}
+```
+
+### Terminal (with Nerd Font variant)
+```bash
+# Check if font is installed
+fc-list | grep FiraD2
+
+# Configure your terminal to use FiraD2NerdFont-Regular
+```
+
+### Web Projects
+```css
+@font-face {
+    font-family: 'FiraD2';
+    src: url('path/to/FiraD2-Regular.woff2') format('woff2');
+    font-display: swap;
+}
+
+code, pre {
+    font-family: 'FiraD2', 'Fira Code', monospace;
+}
+```
+
+## ⚙️ Configuration
+
+The `scripts/config.py` file contains build configuration options:
+
+- `KOREAN_FONT_WIDTH`: Width for Korean characters
+- `ENGLISH_FONT_WIDTH`: Width for English characters  
+- `TARGET_EM`: Target em size for font scaling
+- Font source paths and output directories
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Test the build process
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+## 📋 Requirements
+
+### Source Fonts
+- **FiraCode**: Base programming font with ligatures
+- **D2Coding**: Korean coding font for Hangul support
+- **FiraCode Nerd Font**: Icon-enhanced variant
+
+### Build Dependencies
+- Python 3.7+
+- FontForge with Python bindings
+- Basic Unix utilities (wget, unzip)
+
+## 🐛 Known Issues
+
+- Some terminal emulators may not display ligatures correctly
+- Web font loading might require proper CORS headers
+- Font metrics may need adjustment for specific applications
+
+## 📄 License
+
+This project is licensed under the [SIL Open Font License 1.1](LICENSE).
+
+### Font Licenses
+- **FiraCode**: SIL OFL 1.1
+- **D2Coding**: SIL OFL 1.1  
+- **Nerd Fonts**: MIT License
+
+## 🙏 Acknowledgments
+
+- [FiraCode](https://github.com/tonsky/FiraCode) by Nikita Prokopov
+- [D2Coding](https://github.com/naver/d2codingfont) by NAVER
+- [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) project
+
+---
+
+**Made with ❤️ for developers who work with Korean and English code**
