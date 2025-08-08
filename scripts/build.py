@@ -1,104 +1,104 @@
 import os
 import sys
 import shutil
-import zipfile
 
 from config import (
-    DOWNLOAD_PATH,
     BUILT_FONTS_PATH,
-    KOREAN_FONT_URL,
-    KOREAN_FONT_ZIP_NAME,
-    ENGLISH_FONT_URL,
-    ENGLISH_FONT_ZIP_NAME,
-    ENGLISH_FONT_NF_URL,
-    ENGLISH_FONT_NF_ZIP_NAME,
-    USE_SYSTEM_WGET,
+    EN_FONT_PATH,
+    KO_FONT_PATH,
+    EN_NERD_FONT_PATH,
 )
 from hangulify import build_fonts
-
-if not USE_SYSTEM_WGET:
-    import wget
 
 
 def print_usage():
     """사용법 안내 메시지를 출력합니다."""
     print(f"python {sys.argv[0]} <subcommand>\n")
     print("subcommand:")
-    print("    all    : 자동으로 setup 및 폰트 빌드를 수행합니다.")
-    print("    setup  : 폰트 파일을 다운로드하고 압축을 해제합니다.")
-    print("    build  : 폰트를 병합하고 출력합니다.")
-    print("    clean  : 다운로드 및 출력 파일을 삭제합니다.")
+    print("    build  : assets 디렉터리의 폰트를 병합하고 출력합니다.")
+    print("    test   : 폰트 빌드 프로세스를 테스트합니다.")
+    print("    clean  : 출력 파일을 삭제합니다.")
 
 
-def download_file(url, filename):
-    """wget 또는 시스템 명령어를 사용하여 파일을 다운로드합니다."""
-    print(f"[INFO] {filename} 다운로드 중")
-    if USE_SYSTEM_WGET:
-        os.system(f"wget {url} -O {filename}")
-    else:
-        wget.download(url, out=filename)
 
 
-def extract_zip(zip_path, extract_to):
-    """zip 파일의 압축을 해제합니다."""
-    print(f"[INFO] {os.path.basename(zip_path)} 압축 해제 중")
-    with zipfile.ZipFile(zip_path, "r") as zip_ref:
-        zip_ref.extractall(extract_to)
+def check_font_directories():
+    """필요한 폰트 디렉터리들이 존재하는지 확인합니다."""
+    directories = {
+        "영문 폰트": EN_FONT_PATH,
+        "한글 폰트": KO_FONT_PATH,
+        "너드 폰트": EN_NERD_FONT_PATH
+    }
+    
+    missing_dirs = []
+    for name, path in directories.items():
+        if not os.path.exists(path):
+            missing_dirs.append((name, path))
+        else:
+            ttf_files = [f for f in os.listdir(path) if f.lower().endswith('.ttf')]
+            if not ttf_files:
+                print(f"[WARNING] {name} 디렉터리({path})에 TTF 파일이 없습니다.")
+            else:
+                print(f"[INFO] {name} 디렉터리 확인: {len(ttf_files)}개 폰트 파일 발견")
+    
+    if missing_dirs:
+        print("[ERROR] 다음 디렉터리들이 누락되었습니다:")
+        for name, path in missing_dirs:
+            print(f"  - {name}: {path}")
+        return False
+    
+    return True
 
 
-def setup():
-    """폰트 파일을 다운로드하고 압축을 해제합니다."""
-    print("[INFO] 폰트 파일 다운로드 중")
-    download_file(ENGLISH_FONT_URL, ENGLISH_FONT_ZIP_NAME)
-    download_file(KOREAN_FONT_URL, KOREAN_FONT_ZIP_NAME)
-    download_file(ENGLISH_FONT_NF_URL, ENGLISH_FONT_NF_ZIP_NAME)
-
-    if not os.path.exists(DOWNLOAD_PATH):
-        print(f"[INFO] 디렉터리 생성: {DOWNLOAD_PATH}")
-        os.makedirs(DOWNLOAD_PATH)
-
-    print("[INFO] 다운로드한 파일을 assets 디렉터리로 이동 중")
-    shutil.move(
-        ENGLISH_FONT_ZIP_NAME, os.path.join(DOWNLOAD_PATH, ENGLISH_FONT_ZIP_NAME)
-    )
-    shutil.move(KOREAN_FONT_ZIP_NAME, os.path.join(DOWNLOAD_PATH, KOREAN_FONT_ZIP_NAME))
-    shutil.move(
-        ENGLISH_FONT_NF_ZIP_NAME,
-        os.path.join(DOWNLOAD_PATH, ENGLISH_FONT_NF_ZIP_NAME),
-    )
-
-    extract_zip(os.path.join(DOWNLOAD_PATH, KOREAN_FONT_ZIP_NAME), DOWNLOAD_PATH)
-    extract_zip(os.path.join(DOWNLOAD_PATH, ENGLISH_FONT_ZIP_NAME), DOWNLOAD_PATH)
-    extract_zip(os.path.join(DOWNLOAD_PATH, ENGLISH_FONT_NF_ZIP_NAME), DOWNLOAD_PATH)
-
-    print("[INFO] Regular가 아닌 ttf 파일 및 기타 불필요한 파일 삭제 중...")
-    for root, dirs, files in os.walk(DOWNLOAD_PATH):
-        for file in files:
-            file_path = os.path.join(root, file)
-
-            # 파일명에 'D2Coding'이 포함된 ttf 파일은 삭제하지 않습니다.
-            if file.endswith(".ttf") and "D2Coding" in file:
-                print(f"  - D2Coding 폰트 파일 유지: {file_path}")
-                continue
-
-            if file.endswith(".ttf") and "Regular" not in file:
-                print(f"  - 삭제: {file_path}")
-                os.remove(file_path)
+def test_font_build():
+    """폰트 빌드 프로세스를 테스트합니다."""
+    print("[INFO] 폰트 빌드 테스트 시작")
+    
+    if not check_font_directories():
+        print("[ERROR] 필요한 폰트 디렉터리가 누락되었습니다.")
+        return False
+    
+    try:
+        # FontForge 모듈 임포트 테스트
+        import fontforge
+        print("[INFO] FontForge 모듈 로드 성공")
+        
+        # 각 디렉터리에서 첫 번째 폰트 파일 로드 테스트
+        test_dirs = [EN_FONT_PATH, KO_FONT_PATH, EN_NERD_FONT_PATH]
+        for test_dir in test_dirs:
+            ttf_files = [f for f in os.listdir(test_dir) if f.lower().endswith('.ttf')]
+            if ttf_files:
+                test_file = os.path.join(test_dir, ttf_files[0])
+                try:
+                    font = fontforge.open(test_file)
+                    print(f"[INFO] 폰트 로드 테스트 성공: {ttf_files[0]} (Family: {font.familyname})")
+                    font.close()
+                except Exception as e:
+                    print(f"[ERROR] 폰트 로드 테스트 실패 ({ttf_files[0]}): {e}")
+                    return False
+        
+        print("[INFO] 모든 테스트가 성공했습니다. 폰트 빌드를 진행할 수 있습니다.")
+        return True
+        
+    except ImportError as e:
+        print(f"[ERROR] FontForge 모듈을 찾을 수 없습니다: {e}")
+        print("[INFO] FontForge 설치: pip install fontforge-python 또는 시스템 패키지 관리자 사용")
+        return False
+    except Exception as e:
+        print(f"[ERROR] 테스트 중 오류 발생: {e}")
+        return False
 
 
 def clean():
-    """다운로드 및 출력 파일을 삭제합니다."""
-    print("[INFO] 다운로드한 파일 삭제 중")
-    if os.path.exists(DOWNLOAD_PATH):
-        shutil.rmtree(DOWNLOAD_PATH)
-    else:
-        print(f'[INFO] "{DOWNLOAD_PATH}" 디렉터리를 찾을 수 없어 건너뜁니다.')
-
+    """출력 파일을 삭제합니다."""
     print("[INFO] 출력 파일 삭제 중")
     if os.path.exists(BUILT_FONTS_PATH):
         shutil.rmtree(BUILT_FONTS_PATH)
+        print(f"[INFO] {BUILT_FONTS_PATH} 디렉터리를 삭제했습니다.")
     else:
         print(f'[INFO] "{BUILT_FONTS_PATH}" 디렉터리를 찾을 수 없어 건너뜁니다.')
+
+
 
 
 def main():
@@ -108,20 +108,18 @@ def main():
 
     subcommand = sys.argv[1]
 
-    if subcommand == "all":
-        print("[INFO] 이전 파일 정리 중")
-        try:
-            clean()
-        except Exception:
-            print("[INFO] 출력 파일을 찾을 수 없습니다.")
-        print("[INFO] 폰트 파일 다운로드 및 압축 해제 중")
-        setup()
-        print("[INFO] 폰트 빌드 중")
-        build_fonts()
-    elif subcommand == "setup":
-        setup()
-    elif subcommand == "build":
-        build_fonts()
+    if subcommand == "build":
+        print("[INFO] 폰트 디렉터리 확인 중")
+        if check_font_directories():
+            print("[INFO] 폰트 빌드 시작")
+            build_fonts()
+        else:
+            print("[ERROR] 폰트 빌드에 필요한 파일이 준비되지 않았습니다.")
+            exit(1)
+    elif subcommand == "test":
+        success = test_font_build()
+        if not success:
+            exit(1)
     elif subcommand == "clean":
         clean()
     else:

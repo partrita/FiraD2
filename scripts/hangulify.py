@@ -5,11 +5,11 @@ import fontforge
 
 from config import (
     BUILT_FONTS_PATH,
-    ENGLISH_FONT_NF_PATH,
-    ENGLISH_FONT_PATH,
+    EN_FONT_PATH,
+    KO_FONT_PATH,
+    EN_NERD_FONT_PATH,
     ENGLISH_FONT_NF_WIDTH,
     ENGLISH_FONT_WIDTH,
-    KOREAN_FONT_PATH,
     OLD_FONT_NAME,
     NEW_FONT_NAME,
 )
@@ -275,43 +275,93 @@ def process_font_file(
     generate_font_files(en_font, style)
 
 
+def find_font_files(directory: str, weight: str = None) -> list:
+    """
+    지정된 디렉터리에서 폰트 파일을 찾습니다.
+    
+    Args:
+        directory: 폰트 파일을 찾을 디렉터리
+        weight: 찾을 폰트 웨이트 ("Regular" 또는 "Bold")
+        
+    Returns:
+        폰트 파일 경로의 리스트
+    """
+    if not os.path.exists(directory):
+        return []
+    
+    font_files = []
+    for filename in os.listdir(directory):
+        if filename.lower().endswith(".ttf"):
+            if weight is None:
+                font_files.append(os.path.join(directory, filename))
+            elif weight.lower() in filename.lower():
+                font_files.append(os.path.join(directory, filename))
+    
+    return font_files
+
+
 def build_fonts() -> None:
     """
     메인 폰트 빌드 프로세스입니다.
+    새로운 디렉터리 구조에서 Regular와 Bold 폰트를 로드하고 병합합니다.
     """
     os.makedirs(BUILT_FONTS_PATH, exist_ok=True)
 
-    try:
-        ko_font = fontforge.open(KOREAN_FONT_PATH)
-        scale_font_em_units(ko_font, TARGET_EM)
-        process_hangul_glyphs(ko_font)
-    except Exception as e:
-        print(f"[ERROR] D2Coding 폰트 처리 중 오류 발생: {e}")
+    # 한글 폰트 로드
+    ko_regular_files = find_font_files(KO_FONT_PATH, "regular")
+    ko_bold_files = find_font_files(KO_FONT_PATH, "bold")
+    
+    if not ko_regular_files:
+        print(f"[ERROR] {KO_FONT_PATH}에서 Regular 한글 폰트를 찾을 수 없습니다.")
         return
-
-    font_dirs_to_process = {
-        ENGLISH_FONT_PATH: False,
-        ENGLISH_FONT_NF_PATH: True,
-    }
-
-    for dir_path, is_nerd_font in font_dirs_to_process.items():
-        if not os.path.exists(dir_path):
-            print(
-                f"[WARNING] 폰트 디렉터리를 찾을 수 없습니다: {dir_path}. 건너뜁니다."
-            )
+    
+    # 영문 폰트 로드
+    en_regular_files = find_font_files(EN_FONT_PATH, "regular")
+    en_bold_files = find_font_files(EN_FONT_PATH, "bold")
+    
+    # 너드 폰트 로드
+    nerd_regular_files = find_font_files(EN_NERD_FONT_PATH, "regular")
+    nerd_bold_files = find_font_files(EN_NERD_FONT_PATH, "bold")
+    
+    # 폰트 조합 정의
+    font_combinations = [
+        ("Regular", ko_regular_files, en_regular_files, False),
+        ("Bold", ko_bold_files, en_bold_files, False),
+        ("NerdFont-Regular", ko_regular_files, nerd_regular_files, True),
+        ("NerdFont-Bold", ko_bold_files, nerd_bold_files, True),
+    ]
+    
+    for style, ko_files, en_files, is_nerd_font in font_combinations:
+        if not ko_files:
+            print(f"[WARNING] {style}용 한글 폰트 파일을 찾을 수 없습니다. 건너뜁니다.")
             continue
-
-        for filename in os.listdir(dir_path):
-            if filename.lower().endswith(".ttf"):
-                font_file_path = os.path.join(dir_path, filename)
-                try:
-                    en_font = fontforge.open(font_file_path)
-                    process_font_file(en_font, ko_font, is_nerd_font, filename)
-                    en_font.close()
-                except Exception as e:
-                    print(f"[ERROR] {filename} 처리 중 오류 발생: {e}")
-
-    ko_font.close()
+        if not en_files:
+            print(f"[WARNING] {style}용 영문 폰트 파일을 찾을 수 없습니다. 건너뜁니다.")
+            continue
+            
+        # 첫 번째 파일 사용 (여러 파일이 있을 경우)
+        ko_font_path = ko_files[0]
+        en_font_path = en_files[0]
+        
+        try:
+            print(f"[INFO] {style} 폰트 처리 중: {os.path.basename(ko_font_path)} + {os.path.basename(en_font_path)}")
+            
+            # 한글 폰트 로드 및 처리
+            ko_font = fontforge.open(ko_font_path)
+            scale_font_em_units(ko_font, TARGET_EM)
+            process_hangul_glyphs(ko_font)
+            
+            # 영문 폰트 로드 및 처리
+            en_font = fontforge.open(en_font_path)
+            process_font_file(en_font, ko_font, is_nerd_font, os.path.basename(en_font_path))
+            
+            # 폰트 닫기
+            en_font.close()
+            ko_font.close()
+            
+        except Exception as e:
+            print(f"[ERROR] {style} 폰트 처리 중 오류 발생: {e}")
+            continue
 
 
 if __name__ == "__main__":
