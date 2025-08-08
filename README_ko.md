@@ -6,12 +6,12 @@
 ![License](https://img.shields.io/github/license/partrita/FiraD2?style=flat-square)
 ![Build Status](https://img.shields.io/github/actions/workflow/status/partrita/FiraD2/release-font.yml?style=flat-square)
 
-**FiraD2**는 FiraCode의 합자(ligature) 및 코딩 기능과 D2Coding의 뛰어난 한글 지원을 결합한 프로그래밍 글꼴입니다. 이 글꼴은 영문과 한글 텍스트가 모두 포함된 코드에 최적의 가독성을 제공합니다.
+**FiraD2**는 FiraCode의 리가처(ligature) 및 코딩 기능과 D2Coding의 뛰어난 한글 지원을 결합한 프로그래밍 글꼴입니다. 이 글꼴은 영문과 한글 텍스트가 모두 포함된 코드에 최적의 가독성을 제공합니다.
 
 ## ✨ 특징
 
 - **완벽한 한글 지원**: D2Coding의 한글 글리프(U+3131-U+318E, U+AC00-U+D7A3)를 포함합니다.
-- **프로그래밍 합자**: FiraCode의 인기 있는 프로그래밍 합자(→, >=, != 등)를 유지합니다.
+- **프로그래밍 리가처**: FiraCode의 인기 있는 프로그래밍 리가처(→, >=, != 등)를 유지합니다.
 - **다양한 버전**: 일반 글꼴, 아이콘이 포함된 Nerd Font 버전, 웹 폰트를 제공합니다.
 - **최적화된 간격**: 가독성 향상을 위해 문자 너비를 세심하게 조정했습니다.
 - **크로스플랫폼**: Windows, macOS, Linux에서 작동합니다.
@@ -199,7 +199,7 @@ code, pre {
 ## 📋 요구사항
 
 ### 소스 글꼴
-- **FiraCode**: 합자를 포함한 기본 프로그래밍 글꼴
+- **FiraCode**: 리가처를 포함한 기본 프로그래밍 글꼴
 - **D2Coding**: 한글 지원을 위한 한국어 코딩 글꼴
 - **FiraCode Nerd Font**: 아이콘이 추가된 버전
 
@@ -210,7 +210,7 @@ code, pre {
 
 ## 🐛 알려진 문제
 
-- 일부 터미널 에뮬레이터에서 합자가 올바르게 표시되지 않을 수 있습니다.
+- 일부 터미널 에뮬레이터에서 리가처가 올바르게 표시되지 않을 수 있습니다.
 - 웹 폰트 로딩 시 적절한 CORS 헤더가 필요할 수 있습니다.
 - 특정 애플리케이션에서는 글꼴 메트릭 조정이 필요할 수 있습니다.
 
